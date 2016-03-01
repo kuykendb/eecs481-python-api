@@ -85,7 +85,7 @@ class ProfilePic(Resource):
 		return get_error_response("Upload error.")
 
 
-class VolunteerList(Resource):
+class UserList(Resource):
 
 	"""Class to handle user creation routes."""
 
@@ -160,7 +160,7 @@ class VolunteerList(Resource):
 		return get_success_response(result)
 
 
-class Volunteer(Resource):
+class User(Resource):
 
 	"""Class to handle fetching, updating and deleting users."""
 
@@ -286,7 +286,7 @@ class Volunteer(Resource):
 		return get_success_response()
 
 
-class EventsVolunteers(Resource):
+class EventsUsers(Resource):
 
 	"""Class for adding and removing users to events."""
 

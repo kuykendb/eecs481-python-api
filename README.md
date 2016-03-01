@@ -1,7 +1,10 @@
 #EECS 481 Fall 2015
+
+University of Michigan - EECS 481: Software Engineering - Capstone Course Project
+
 ##Volunteerism Crowdsourcing Application
 
-This repository contains the backend and website for our web application to crowdsource volunteerism. The goal of the project is to provide a web application through which volunteer organizations can crowdsource their service needs. At a high level, the application consists of an iOS application which interfaces with a JSON web API.
+This repository contains the backend for our iOS application to crowdsource volunteerism. The goal of the project is to provide an application through which volunteer organizations can crowdsource their service needs. At a high level, the application consists of an iOS application which interfaces with a JSON web API.
 
 ## Backend Architecture
 
