@@ -1,0 +1,1 @@
+INSERT INTO user (email,password,active) VALUES ("test@example.com","$pbkdf2-sha512$25000$1ppTCkHImdM6R4hxrlWq1Q$bE39/uYOUQ50bja9yzLi61DLDWhvugMGP6FEo2U74nnyY5Ckl6FP5gJ56IhgEtzunvHSNxFD1l.bV9sMjkJsKQ",1);
