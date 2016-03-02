@@ -121,7 +121,8 @@ class EventList(Resource):
                 if e.lat is not None and e.lon is not None: 
 
                     # Get distance between coordinates and convert to miles.
-                    dist = calculate_equirectangular_distance(location["lat"], location["lon"],
+                    dist = calculate_equirectangular_distance(location["lat"], 
+                                                              location["lon"],
                                                               e.lat, e.lon)
                     miles = 0.62 * dist
 
@@ -138,7 +139,7 @@ class EventList(Resource):
         # search and stop and return if we reach limit
         for e in results:
 
-            if limit is not None and len(events)==limit:
+            if limit is not None and len(events) == limit:
                  return get_success_response({"events": events})
             
             if use_location and e.dist < radius:
@@ -192,11 +193,14 @@ class EventList(Resource):
             full_desc = req_json.get("full_desc", None)
             street_addr = req_json.get("street_addr", None)
             organization = req_json.get("organization", None)
-            skills = req_json.get("skills",[])
+            skills = req_json.get("skills", [])
 
-            # If not provided, set all default dates to current time. User can update later.
-            close_date = req_json.get("close_date", datetime.now().strftime("%m/%d/%Y"))
-            end_date = req_json.get("end_date", datetime.now().strftime("%m/%d/%Y"))
+            # If not provided, set all default dates to current time.
+            # User can update later.
+            close_date = req_json.get("close_date", 
+                                      datetime.now().strftime("%m/%d/%Y"))
+            end_date = req_json.get("end_date", 
+                                    datetime.now().strftime("%m/%d/%Y"))
 
             # If the user provided a zipcode, set their coordinates
             zipcode = req_json.get("zipcode",None)
@@ -222,8 +226,10 @@ class EventList(Resource):
             if close_date is not None:
                 close_date = datetime.strptime(close_date, '%m/%d/%Y')
 
-            event = db_event(event_name,short_desc,organization,full_desc,start_date,end_date,max_volunteers,
-                        close_date,creator_id,street_addr,location["city"],location["state"],zipcode)
+            event = db_event(event_name, short_desc, organization, full_desc,
+                             start_date, end_date, max_volunteers, close_date,
+                             creator_id, street_addr, location["city"],
+                             location["state"], zipcode)
 
             # Set latitude and longitude
             event.lat = location["lat"]
@@ -244,7 +250,7 @@ class EventList(Resource):
                 msg = "Foreign key error."
                 return get_error_response(msg)
 
-            return get_success_response({"event":event.serialize})
+            return get_success_response({"event": event.serialize})
 
         else:
 
@@ -373,7 +379,7 @@ class Event(Resource):
         conn = app.mysql.connection
         cur = conn.cursor(MySQLdb.cursors.DictCursor)
 
-        cur.execute("DELETE FROM event WHERE id=%s",({event_id}))
+        cur.execute("DELETE FROM event WHERE id=%s", ({event_id}))
         conn.commit()
 
         return get_success_response()
@@ -397,7 +403,8 @@ class EventPic(Resource):
         if file:
 
             # Save the pic to filesystem
-            filename = secure_filename(event_id + "_" + datetime.now().strftime("%Y%m%d%H%M%S"))
+            filename = secure_filename(event_id + "_" + 
+                                       datetime.now().strftime("%Y%m%d%H%M%S"))
             file.save(os.path.join(app.config['EVENT_PIC_UPLOAD_FOLDER'], filename))
 
             # Save pic url to user
@@ -409,7 +416,8 @@ class EventPic(Resource):
 
                 # delete the old pic if there was one
                 if event.pic_url is not None:
-                    os.remove(os.path.join(app.config['EVENT_PIC_UPLOAD_FOLDER'], event.pic_url))
+                    os.remove(os.path.join(app.config['EVENT_PIC_UPLOAD_FOLDER'],
+                                           event.pic_url))
 
                 event.pic_url = filename
 

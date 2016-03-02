@@ -17,10 +17,11 @@ from flask.ext.security import Security, SQLAlchemyUserDatastore, \
 from flask.json import JSONEncoder
 import flask.ext.whooshalchemy
 
-from api.event import EventList,Event, EventPic
-from api.user import UserList,User,EventsUsers, \
+from api.event import EventList, Event, EventPic
+from api.user import UserList, User, EventsUsers, \
     ProfilePic, Login
-from models.models import User as db_user, Event as db_event, Role, RoleMixin, db
+from models.models import User as db_user, Event as db_event, \
+    Role, RoleMixin, db
 from globals import *
 
 class CustomJSONEncoder(JSONEncoder):
@@ -44,12 +45,12 @@ app.json_encoder = CustomJSONEncoder
 
 # WooshAlchemy Configuration
 app.config['WHOOSH_BASE'] = 'index'
-flask.ext.whooshalchemy.whoosh_index(app,db_event)
+flask.ext.whooshalchemy.whoosh_index(app, db_event)
 
 # MySQL Configuration
-app.config['MYSQL_HOST']="localhost"
-app.config['MYSQL_USER']="root"
-app.config['MYSQL_DB']="volunteer_app"
+app.config['MYSQL_HOST'] = "localhost"
+app.config['MYSQL_USER'] = "root"
+app.config['MYSQL_DB'] = "volunteer_app"
 app.mysql = MySQL(app)
 
 # SQLAlchemy Configuration
@@ -83,16 +84,16 @@ security = Security(app, user_datastore)
 api = Api(app)
 
 # Add routes for users defined in api/user.py
-api.add_resource(Login,'/user/loginUser')
-api.add_resource(UserList,'/users')
-api.add_resource(User,'/user/<user_id>')
-api.add_resource(ProfilePic,'/user/<user_id>/picture')
-api.add_resource(EventPic,'/event/<event_id>/picture')
+api.add_resource(Login, '/user/loginUser')
+api.add_resource(UserList ,'/users')
+api.add_resource(User, '/user/<user_id>')
+api.add_resource(ProfilePic, '/user/<user_id>/picture')
+api.add_resource(EventPic, '/event/<event_id>/picture')
 
 # Add routes for events defined in api/events.py
-api.add_resource(EventsUsers,'/event/<event_id>/<user_id>')
+api.add_resource(EventsUsers, '/event/<event_id>/<user_id>')
 api.add_resource(EventList, '/events')
 api.add_resource(Event, '/event/<event_id>')
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",port=8889,debug=True)
+    app.run(host="0.0.0.0", port=8889, debug=True)

@@ -49,9 +49,11 @@ class User(db.Model, UserMixin):
     last_login_ip = db.Column(db.String(255))
     current_login_ip = db.Column(db.String(255))
     login_count = db.Column(db.Integer)
-    roles = db.relationship('Role', secondary=roles_users,backref=db.backref('users', lazy='dynamic'))
-    created_events = db.relationship('Event', backref='user',lazy='dynamic')
-    attending_events = db.relationship('Event', secondary=events_users,backref='events',lazy='dynamic')
+    roles = db.relationship('Role', secondary=roles_users, 
+                            backref=db.backref('users', lazy='dynamic'))
+    created_events = db.relationship('Event', backref='user', lazy='dynamic')
+    attending_events = db.relationship('Event', secondary=events_users,
+                                       backref='events', lazy='dynamic')
     current_hours = db.Column(db.Integer)
     goal_hours = db.Column(db.Integer)
     zipcode = db.Column(db.Integer)
@@ -66,18 +68,18 @@ class User(db.Model, UserMixin):
        """Return object data in easily serializeable format"""
        return {
             'id': self.id,
-            'email':self.email,
-            'first_name':self.first_name,
-            'last_name':self.last_name,
-            'created_events':self.serialize_created_events,
-            'upcoming_events':self.serialize_upcoming_events,
-            'recent_events':self.serialize_recent_events,
-            'current_hours':self.current_hours,
-            'goal_hours':self.goal_hours,
-            'zipcode':self.zipcode,
-            'profile_pic_url':self.profile_pic_url,
-            'lat':self.lat,
-            'lon':self.lon
+            'email': self.email,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'created_events': self.serialize_created_events,
+            'upcoming_events': self.serialize_upcoming_events,
+            'recent_events': self.serialize_recent_events,
+            'current_hours': self.current_hours,
+            'goal_hours': self.goal_hours,
+            'zipcode': self.zipcode,
+            'profile_pic_url': self.profile_pic_url,
+            'lat': self.lat,
+            'lon': self.lon
        }
 
     @property
@@ -92,7 +94,7 @@ class User(db.Model, UserMixin):
     @property
     def serialize_recent_events(self):
         recent = self.attending_events.filter(Event.end_date < datetime.now())    
-        return [ event.serialize for event in recent]
+        return [event.serialize for event in recent]
 
 class Event(db.Model):
 
@@ -105,7 +107,7 @@ class Event(db.Model):
 
     # Define searchable fields to be indexed by WhooshAlchemy
     __tablename__ = 'event'
-    __searchable__ = ['description','organization','name']
+    __searchable__ = ['description', 'organization', 'name']
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
@@ -125,12 +127,14 @@ class Event(db.Model):
     city = db.Column(db.String(255))
     state = db.Column(db.String(255))
     zipcode = db.Column(db.String(10))
-    skills = db.relationship('Skill', secondary=skills_events,backref=db.backref('skills', lazy='dynamic'))
+    skills = db.relationship('Skill', secondary=skills_events,
+                             backref=db.backref('skills', lazy='dynamic'))
     lat = db.Column(db.Float(precision="20,17"))
     lon = db.Column(db.Float(precision="20,17"))
 
-    def __init__(self, name,short_desc,organization,description,start_date,end_date,max_volunteers_needed,
-          close_date,creator_id,street_addr,city,state,zipcode):
+    def __init__(self, name, short_desc, organization, description, start_date,
+                 end_date, max_volunteers_needed, close_date, creator_id, 
+                 street_addr, city, state, zipcode):
 
         self.name = name
         self.short_desc = short_desc
@@ -157,26 +161,26 @@ class Event(db.Model):
        """Return object data in easily serializeable format"""
        return {
            'id': self.id,
-            'name':self.name,
-            'short_desc':self.short_desc,
-            'description':self.description,
-            'organization':self.organization,
-            'start_date':self.start_date.strftime("%m/%d/%Y"),
-            'end_date':self.end_date.strftime("%m/%d/%Y"),
-            'current_num_volunteers':self.current_num_volunteers,
-            'max_volunteers_needed':self.max_volunteers_needed,
-            'skills':self.serialize_skills,
-            'close_date':self.close_date.strftime("%m/%d/%Y"),
-            'creator_id':self.creator_id,
-            'street_addr':self.street_addr,
-            'city':self.city,
-            'state':self.state,
-            'zipcode':self.zipcode,
-            'created_date':self.created_date.strftime("%m/%d/%Y"),
-            'last_updated_date':self.last_updated_date.strftime("%m/%d/%Y"),
-            'lat':self.lat,
-            'lon':self.lon,
-            'pic_url':self.pic_url
+            'name': self.name,
+            'short_desc': self.short_desc,
+            'description': self.description,
+            'organization': self.organization,
+            'start_date': self.start_date.strftime("%m/%d/%Y"),
+            'end_date': self.end_date.strftime("%m/%d/%Y"),
+            'current_num_volunteers': self.current_num_volunteers,
+            'max_volunteers_needed': self.max_volunteers_needed,
+            'skills': self.serialize_skills,
+            'close_date': self.close_date.strftime("%m/%d/%Y"),
+            'creator_id': self.creator_id,
+            'street_addr': self.street_addr,
+            'city': self.city,
+            'state': self.state,
+            'zipcode': self.zipcode,
+            'created_date': self.created_date.strftime("%m/%d/%Y"),
+            'last_updated_date': self.last_updated_date.strftime("%m/%d/%Y"),
+            'lat': self.lat,
+            'lon': self.lon,
+            'pic_url': self.pic_url
        }
 
     @property
@@ -185,7 +189,7 @@ class Event(db.Model):
        Return object's relations in easily serializeable format.
        NB! Calls many2many's serialize property.
        """
-       return [ skill.name for skill in self.skills]
+       return [skill.name for skill in self.skills]
 
 class Skill(db.Model):
 
@@ -194,6 +198,6 @@ class Skill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
 
-    def __init__(self,name):
+    def __init__(self, name):
         self.name=name
 
