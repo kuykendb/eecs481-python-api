@@ -24,12 +24,15 @@ def allowed_file(filename):
 
 class Login(Resource):
 
-    """Class to handle user login route"""
+    """Class to handle user login route"""        
 
+    @key_required
     def post(self):
         """Log user in.
 
         """
+
+        app = current_app._get_current_object()
 
         req_json = request.get_json()
 
@@ -40,7 +43,8 @@ class Login(Resource):
 
         if user is not None:
             if utils.verify_password(password,user.password):
-                return json.jsonify(user=user.serialize)
+                token = user.generate_auth_token(app)
+                return jsonify({ 'token': token.decode('ascii') })
             else:
                 return json.jsonify(error="Invalid password!")
         else:
@@ -50,6 +54,8 @@ class ProfilePic(Resource):
 
     """Class to handle profile pic routes."""
 
+    @key_required
+    @auth_required
     def post(self,user_id):
         """Update profile picture"""
 
@@ -90,6 +96,8 @@ class UserList(Resource):
 
     """Class to handle user creation routes."""
 
+    @key_required
+    @auth_required
     def post(self):
         """Create a new user."""
 
@@ -134,7 +142,7 @@ class UserList(Resource):
                 zip = int(zipcode)
                 coordinates = get_location_from_zip(zip)        
 
-                # coorindates will be None if no coordinates
+                # Coorindates will be None if no coordinates
                 # were found that match the provided zipcode
                 if coordinates is not None: 
 
@@ -165,6 +173,8 @@ class User(Resource):
 
     """Class to handle fetching, updating and deleting users."""
 
+    @key_required
+    @auth_required
     def get(self,user_id):
         """Return user."""
 
@@ -175,6 +185,8 @@ class User(Resource):
 
         return get_error_response("User not found.")
 
+    @key_required
+    @auth_required
     def post(self, user_id):
         """Update user."""
 
@@ -291,11 +303,15 @@ class EventsUsers(Resource):
 
     """Class for adding and removing users to events."""
 
+    @key_required
+    @auth_required
     def get(self, user_id):
         """Get user's events."""
 
         return get_success_response()
 
+    @key_required
+    @auth_required
     def post(self, event_id, user_id):
         """Add user to event."""
 
@@ -312,6 +328,8 @@ class EventsUsers(Resource):
 
         return get_success_response()
 
+    @key_required
+    @auth_required
     def delete(self, event_id, user_id):
         """Remove user from event."""
 

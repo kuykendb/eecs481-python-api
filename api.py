@@ -12,16 +12,16 @@ from flask.ext.mysqldb import MySQL
 from flask.ext.mysqldb import MySQLdb
 from flask_restful import Resource, Api
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required, utils
+from flask.ext.security import (Security, SQLAlchemyUserDatastore,
+    UserMixin, RoleMixin, login_required, utils)
 from flask.json import JSONEncoder
 import flask.ext.whooshalchemy
 
 from api.event import EventList, Event, EventPic
-from api.user import UserList, User, EventsUsers, \
-    ProfilePic, Login
-from models.models import User as db_user, Event as db_event, \
-    Role, RoleMixin, db
+from api.user import (UserList, User, EventsUsers,
+    ProfilePic, Login)
+from models.models import (User as db_user, Event as db_event,
+    Role, RoleMixin, db)
 from globals import *
 
 class CustomJSONEncoder(JSONEncoder):
@@ -84,7 +84,7 @@ security = Security(app, user_datastore)
 api = Api(app)
 
 # Add routes for users defined in api/user.py
-api.add_resource(Login, '/user/loginUser')
+api.add_resource(Login, '/user/login')
 api.add_resource(UserList ,'/users')
 api.add_resource(User, '/user/<user_id>')
 api.add_resource(ProfilePic, '/user/<user_id>/picture')

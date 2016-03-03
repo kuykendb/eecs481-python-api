@@ -1,7 +1,11 @@
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required
 from datetime import datetime
+
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.security import (Security, SQLAlchemyUserDatastore,
+    UserMixin, RoleMixin, login_required)
+
+from itsdangerous import (TimedJSONWebSignatureSerializer
+    as Serializer, BadSignature, SignatureExpired)
 
 # We won't initialize the datastore yet, we'll let the 
 # application do it. This allows multiple applications to
@@ -95,6 +99,10 @@ class User(db.Model, UserMixin):
     def serialize_recent_events(self):
         recent = self.attending_events.filter(Event.end_date < datetime.now())    
         return [event.serialize for event in recent]
+
+    def generate_auth_token(self, app, expiration = 600):
+        s = Serializer(app.config['SECRET_KEY'])
+        return s.dumps({ 'id': self.id })
 
 class Event(db.Model):
 

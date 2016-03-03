@@ -1,8 +1,62 @@
 from math import cos, sqrt, radians
+from functools import wraps
 
 from flask import *
 from flask.ext.mysqldb import MySQL
 from flask.ext.mysqldb import MySQLdb
+
+from itsdangerous import (TimedJSONWebSignatureSerializer
+    as Serializer, BadSignature, SignatureExpired)
+
+from models.models import User as db_user
+from globals import *
+
+def key_required(f):
+    """Decorator to require API KEY for every request.
+
+    The API KEY must be present in the request as a header
+    with a key "api_key".
+    """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        app = current_app._get_current_object()
+        key = request.headers.get("api_key")
+
+        if key == API_KEY:
+            return f(*args, **kwargs)
+        else:
+            return get_error_response("Unauthorized.")
+    return decorated_function
+
+def auth_required(f):
+    """Decorator to require a valid token.
+
+    Token must be present in authorization header.
+    """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        app = current_app._get_current_object()
+        token = request.headers.get("authorization")
+
+        if verify_auth_token(app, token):
+            return f(*args, **kwargs)
+        else:
+            return get_error_response("Unauthorized.")
+    return decorated_function
+
+def verify_auth_token(app, token):
+    """Verify that the presented token is valid."""
+
+    s = Serializer(app.config['SECRET_KEY'])
+    try:
+        data = s.loads(token)
+    except SignatureExpired:
+        return False # valid token, but expired
+    except BadSignature:
+        return False # invalid token
+    return True
 
 def calculate_equirectangular_distance(lat1, lon1, lat2, lon2):
     """Calculate the equirectangular distance between two coordinates."""

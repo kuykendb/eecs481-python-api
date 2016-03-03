@@ -24,8 +24,6 @@ Used to limit initial WooshAlchmey index based search
 to a roughly (2*MAX_SEARCH_RANGE)^2 sized box to optimize 
 query time. 
 
-NOTE: 6 degress is roughly 300 miles
-
 """
 
 class EventList(Resource):
@@ -38,6 +36,8 @@ class EventList(Resource):
 
     """
 
+    @key_required
+    @auth_required
     def get(self):
         """Return list of events.
 
@@ -120,10 +120,11 @@ class EventList(Resource):
                 # Make sure the event's location is set
                 if e.lat is not None and e.lon is not None: 
 
-                    # Get distance between coordinates and convert to miles.
+                    # Get distance between coordinates
                     dist = calculate_equirectangular_distance(location["lat"], 
                                                               location["lon"],
                                                               e.lat, e.lon)
+                    # Convert km to miles
                     miles = 0.62 * dist
 
                     # Store the distance with each event for sorting later
@@ -149,6 +150,8 @@ class EventList(Resource):
         
         return get_success_response({"events": events})
 
+    @key_required
+    @auth_required
     def post(self):
         """Create an event.
 
@@ -211,14 +214,14 @@ class EventList(Resource):
                     zip = int(zipcode)
                     location = get_location_from_zip(zip)       
 
-                    # location will be None if zipcode is invalid
+                    # Location will be None if zipcode is invalid
                     if location is None:
                         return get_error_response("Zipcode not found.")
 
                 except (ValueError, IndexError):
                     return get_error_response("Zipcode not found.")
 
-
+            # Make sure dates are formatted correctly 
             if start_date is not None:
                 start_date = datetime.strptime(start_date, '%m/%d/%Y')
             if end_date is not None:
@@ -262,6 +265,8 @@ class Event(Resource):
 
     """Class for fetching, updating and deleting events."""
 
+    @key_required
+    @auth_required
     def get(self, event_id):
         """Return an event."""
 
@@ -273,6 +278,8 @@ class Event(Resource):
 
         return get_success_response({"event": e.serialize})
 
+    @key_required
+    @auth_required
     def post(self, event_id):
         """Update an event.
 
@@ -328,6 +335,7 @@ class Event(Resource):
             except (ValueError, IndexError):
                 return get_error_response("Zipcode not found.")
 
+        # Make sure dates are formatted correctly 
         if start_date is not None:
             start_date = datetime.strptime(start_date, '%m/%d/%Y')
         if end_date is not None:
@@ -371,7 +379,8 @@ class Event(Resource):
         else:
             return get_error_response("Event not found.")
 
-
+    @key_required
+    @auth_required
     def delete(self, event_id):
         """Delete an event."""
 
@@ -389,6 +398,8 @@ class EventPic(Resource):
 
     """Class to handle update picture route."""
 
+    @key_required
+    @auth_required
     def post(self,event_id):
         """Update the picture for an event.
 
